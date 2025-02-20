@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: exabwr-k8s
+  namespace: default
+  labels:
+    name: exabwr-k8s
+spec:
+  ports:
+    - nodePort: 30163
+      port: 8090
+      targetPort: 8090
+      protocol: TCP
+  selector:
+    app: exabwr-k8s
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exabwr-k8s
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: exabwr-k8s
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: exabwr-k8s
+    spec:
+      containers:
+        - name: exabwr-k8s
+          image: exabwr-k8s:1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-configmap
+                  key: host
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-configmap
+                  key: name
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_user
+                  name: postgres-credentials
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_password
