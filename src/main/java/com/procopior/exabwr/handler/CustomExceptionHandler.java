@@ -23,9 +23,9 @@ public class CustomExceptionHandler {
 	public ResponseEntity<ResponseErrorDTO> userException(final UserException ex) {
 		LOGGER.error("Handler exception {}", ex);
 		final ResponseErrorDTO errorDTO = new ResponseErrorDTO();
-		errorDTO.setCode(HttpStatus.NOT_FOUND.toString());
+		errorDTO.setCode(HttpStatus.BAD_REQUEST.toString());
 		errorDTO.setMessage(ex.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDTO);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
 	}
 
 	@ExceptionHandler(Exception.class)
